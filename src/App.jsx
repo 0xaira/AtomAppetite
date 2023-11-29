@@ -7,10 +7,11 @@ import RestaurantCard from './Components/RestaurantCard'
 function App() {
   return (
     <>
+    <body className="px-20">
       <Header/>
-      <RestaurantCard/>
       <Body/>
       <Footer/>
+      </body>
     </>
   )
 }
