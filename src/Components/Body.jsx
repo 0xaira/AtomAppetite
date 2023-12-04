@@ -1,20 +1,22 @@
-import RestaurantCard from "./RestaurantCard";
-import { useEffect, useState } from "react";
-import Shimmer from "./Shimmer";
-import { swiggy_api_URL } from "../utils/constants";
+import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import RestaurantCard from './RestaurantCard';
+import Shimmer from './Shimmer';
+import { swiggy_api_URL } from '../utils/constants';
 
 function filterData(searchText, restaurants) {
-  const resFilterData = restaurants.filter((restaurant) =>
-    restaurant?.info?.name.toLowerCase().includes(searchText.toLowerCase())
+  const resFilterData = restaurants.filter(
+    (restaurant) =>
+      restaurant?.info?.name.toLowerCase().includes(searchText.toLowerCase())
   );
   return resFilterData;
 }
 
 const Body = () => {
-  const [searchText, setSearchText] = useState("");
+  const [searchText, setSearchText] = useState('');
   const [allRestaurants, setAllRestaurants] = useState([]);
   const [filteredRestaurants, setFilteredRestaurants] = useState([]);
-  const [errorMessage, setErrorMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
     getRestaurants();
@@ -27,7 +29,9 @@ const Body = () => {
 
       async function checkJsonData(jsonData) {
         for (let i = 0; i < jsonData?.data?.cards.length; i++) {
-          let checkData = json?.data?.cards[i]?.card?.card?.gridElements?.infoWithStyle?.restaurants;
+          let checkData =
+            json?.data?.cards[i]?.card?.card?.gridElements?.infoWithStyle
+              ?.restaurants;
           if (checkData !== undefined) {
             return checkData;
           }
@@ -44,12 +48,17 @@ const Body = () => {
   }
 
   const searchData = (searchText, restaurants) => {
-    if (searchText !== "") {
+    if (searchText !== '') {
       const filteredData = filterData(searchText, restaurants);
       setFilteredRestaurants(filteredData);
-      setErrorMessage(filteredData.length === 0 ? "No matches restaurant found" : "");
+      setErrorMessage('');
+      if (filteredData?.length === 0) {
+        setErrorMessage(
+          `Sorry, we couldn't find any results for "${searchText}"`
+        );
+      }
     } else {
-      setErrorMessage("");
+      setErrorMessage('');
       setFilteredRestaurants(restaurants);
     }
   };
@@ -58,44 +67,43 @@ const Body = () => {
 
   return (
     <>
-      <div className="flex justify-between mb-4">
-      <button
-  className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-  onClick={() => {
-    const filteredList = allRestaurants.filter(
-      (restaurant) => restaurant?.info?.avgRating > 4.2
-    );
-    setFilteredRestaurants(filteredList);
-    console.log(filteredList);
-  }}
->
-  Filter Restaurant
-</button>
-
-        
-      </div>
-      <div className="search-container mb-4">
+      <div className="search-container mx-4 my-2 flex items-center">
         <input
           type="text"
-          className="border-2 border-gray-300 rounded py-2 px-4 focus:outline-none focus:border-blue-500"
+          className="search-input border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring focus:border-blue-500 flex-1 mr-2"
           placeholder="Search a restaurant you want..."
           value={searchText}
           onChange={(e) => setSearchText(e.target.value)}
-        ></input>
+        />
         <button
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 ml-2 rounded"
-          onClick={() => searchData(searchText, allRestaurants)}
+          className="search-btn bg-blue-500 text-white font-semibold py-2 px-4 rounded hover:bg-blue-600 focus:outline-none"
+          onClick={() => {
+            searchData(searchText, allRestaurants);
+          }}
         >
           Search
         </button>
       </div>
-      {errorMessage && <div className="error-container bg-red-100 text-red-600 p-2 mb-4 rounded">{errorMessage}</div>}
+      {errorMessage && (
+        <div className="error-container text-red-500 text-sm mx-4 mb-2">
+          {errorMessage}
+        </div>
+      )}
+
       {allRestaurants?.length === 0 ? (
         <Shimmer />
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="restaurant-list mx-4 flex flex-wrap">
           {filteredRestaurants.map((restaurant) => {
-            return <RestaurantCard key={restaurant?.info?.id} {...restaurant?.info} />;
+            return (
+              <Link
+                to={`/restaurant/${restaurant?.info?.id}`}
+                key={restaurant?.info?.id}
+                className="block mb-4 hover:bg-gray-100 rounded-md p-4"
+              >
+                <RestaurantCard {...restaurant?.info} />
+              </Link>
+            );
           })}
         </div>
       )}

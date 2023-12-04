@@ -1,5 +1,7 @@
 import { useState } from "react";
 import logo from "../img/logo.png";
+import Help from "./Help";
+import { Link } from "react-router-dom";
 
 const Title = () => (
   <a href="/">
@@ -20,11 +22,14 @@ const Header = () => {
       <Title />
       <div className="nav-items">
         <ul className="flex space-x-4">
-          <li>Home</li>
-          <li>About</li>
-          <li>Contact</li>
+          <li>Search</li>
+          <li><Link to="/offers">Offers</Link></li>
+          <li><Link to="/help">Help</Link></li>
+          <li>Sign In</li>
+          
+
           <li>
-            <i className="fas fa-shopping-cart"></i>
+            Cart
           </li>
           <li>
             {isLoggedin ? (
